@@ -14,27 +14,6 @@ import java.util.concurrent.ThreadLocalRandom;
 public class AdminPlatform {
     public static void main(String[] args) {
 
-        /* Title: Automation testing script with proper validations for our "Admin Panel" platform of Nitex(Design publish journey).
-           Environment: Web (Chrome Browser).
-           Language: Basic Java and JavaScript.
-           Tools: Selenium WebDriver, TestNG, Intellij idea
-           URL: https://testadmin-copy2.nitex.com/collections/list
-
-           Description: This code is for Automating the full design journey flow from "Fashion Designer's" account except only the 'Costing' is done from Costing Manager's account.
-           Here, I have completed the flow from Nitex Design to Presentation from Fashion Designer's account then Costing from the Costing Manager's account with Validation.
-           Then Published the design from Costing Manager's account.
-           Workflow:
-           1. Login with valid credentials of a Fashion Designer.
-           2. Validate upon successful login
-           3. Validate the dashboard visibility
-           4. Create a new 'Collection' and validate the collection created or not
-           5. Validate the collection visibility in the list/collection view
-           6. Open the newly created collection and upload a new design image
-           7. Validate the uploaded image preview and success message
-           8. Select Market & Category
-           9. Validate successful design creation
-          10.
-         */
         WebDriver driver = new ChromeDriver();
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
@@ -200,6 +179,13 @@ public class AdminPlatform {
             }
             //Wait for modal to disappear
             wait.until(ExpectedConditions.elementToBeClickable(By.id("add-multiple-design"))).click();
+
+            //Get the design name
+            WebElement designName= wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id='root']/div/div/div/section/div/div/div/div[1]/div/div/div[1]/div[2]/div/div[1]/a/h4")));
+            assert designName != null;
+            String x = designName.getText();
+            System.out.println("The Design Name is: "+x);
+
             // Click the product image — opens a new tab
             WebElement productImage = wait.until(ExpectedConditions.elementToBeClickable(
                     By.xpath("//img[@alt='product-image']")
@@ -602,10 +588,153 @@ public class AdminPlatform {
                 System.out.println("✅ Costing Manager Login successful — Dashboard is visible.");
             } catch (TimeoutException e) {
                 System.out.println("❌ Login failed — Dashboard not visible.");
-
                 // Optionally, take a screenshot or throw an AssertionError if using TestNG
                 throw new AssertionError("Login failed — expected dashboard not found.");
             }
+            // Wait until any loading overlay disappears
+            wait.until(ExpectedConditions.invisibilityOfElementLocated(
+                    By.xpath("//div[contains(@class,'_loading_overlay_overlay')]"))
+            );
+
+            // Now click the Collection button
+            WebElement collectionTab = wait.until(ExpectedConditions.elementToBeClickable(
+                    By.xpath("//*[@id='root']/div/div/nav/div[3]/ul/li[2]/a")));
+            ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", collectionTab);
+            ((JavascriptExecutor) driver).executeScript("arguments[0].click();", collectionTab);
+            System.out.println("✅ Clicked on Collection button after overlay disappeared");
+
+            // Wait for overlay again (page transition)
+            wait.until(ExpectedConditions.invisibilityOfElementLocated(
+                    By.xpath("//div[contains(@class,'_loading_overlay_overlay')]"))
+            );
+
+            try {
+                // Wait until overlay disappears (page fully loaded)
+                wait.until(ExpectedConditions.invisibilityOfElementLocated(
+                        By.xpath("//div[contains(@class,'_loading_overlay_overlay')]"))
+                );
+
+                // Flexible locator for Design View icon
+                By designViewLocator = By.xpath("//div[@class='view-tab cursor-pointer ']//img");
+
+                // Wait for presence, visibility, then clickability
+                wait.until(ExpectedConditions.presenceOfElementLocated(designViewLocator));
+                WebElement designView = wait.until(ExpectedConditions.visibilityOfElementLocated(designViewLocator));
+                assert designView != null;
+                wait.until(ExpectedConditions.elementToBeClickable(designView));
+
+                // Scroll into view & click via JavaScript
+                ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", designView);
+                ((JavascriptExecutor) driver).executeScript("arguments[0].click();", designView);
+                System.out.println("✅ Clicked on Design View.");
+
+            } catch (TimeoutException e) {
+                System.out.println("❌ Timed out waiting for Design View to appear or become clickable.");
+            } catch (Exception e) {
+                System.out.println("❌ Error while clicking Design View: " + e.getMessage());
+            }
+
+
+            //confirm design view page
+            try {
+                // Wait until the 'Archived' tab is visible
+                WebElement archivedTab = wait.until(ExpectedConditions.visibilityOfElementLocated(
+                        By.xpath("//li[text()='Archived']")
+                ));
+//                System.out.println(archivedTab.getText());
+                assert archivedTab != null;
+                if (archivedTab.isDisplayed()) {
+                    System.out.println("📁 'Archived' tab is visible on the page.");
+                } else {
+                    System.out.println("⚠️ 'Archived' tab element found but not displayed.");
+                }
+
+            } catch (TimeoutException e) {
+                System.out.println("❌ Timed out waiting for 'Archived' tab to appear within the expected time.");
+            } catch (NoSuchElementException e) {
+                System.out.println("❌ 'Archived' tab element not found in the DOM.");
+            } catch (Exception e) {
+                System.out.println("❌ Unexpected error while waiting for 'Archived' tab: " + e.getMessage());
+            }
+
+            Thread.sleep(2000);
+            //Validate the created Design is visible
+            WebElement newDesign = wait.until(ExpectedConditions.visibilityOfElementLocated(
+                    By.xpath("//a[contains(text(),'" + x + "')]")));
+            assert newDesign != null;
+            if (newDesign.isDisplayed()) {
+                System.out.println("✅ Design '" + x + "' appears in the list!");
+            } else {
+                System.out.println("❌ Design is not visible!");
+            }
+            Thread.sleep(2000);
+            //Click the newly created design
+            wait.until(ExpectedConditions.elementToBeClickable(newDesign)).click();
+            System.out.println("🖱️ Opened the existing Design: " + x);
+            Thread.sleep(2000);
+
+            //click on the edit info button
+            WebElement editBtn1 = wait.until(ExpectedConditions.visibilityOfElementLocated(
+                    By.xpath("//button[normalize-space()='Edit basic info']")
+            ));
+            ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({block: 'center'});", editBtn1);
+            Thread.sleep(500); // allow scroll animation or header shift
+            ((JavascriptExecutor) driver).executeScript("arguments[0].click();", editBtn1);
+            System.out.println("✅ Clicked 'Edit basic info' button.");
+            Thread.sleep(1000);
+
+            //Click on the Costing button
+            wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//p[@class='d-flex align-items-center mt-half']"))).click();
+            Thread.sleep(1000);
+
+            //Input amount
+            wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//input[@placeholder='Fabric, Trims, Print...']"))).sendKeys("1,2,1,2,1,2,1,2,1");
+            Thread.sleep(1000);
+            wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//div[@class='costing-items-details']"))).click();
+            Thread.sleep(1000);
+            // get the toast message
+            WebElement pop1 = wait.until(ExpectedConditions.visibilityOfElementLocated(
+                    By.xpath("//p[@class='toast-text']")
+            ));
+            System.out.println("After input: "+pop1.getText());
+            Thread.sleep(2000);
+
+            //Again Click on the Costing button
+            wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//p[@class='d-flex align-items-center mt-half']"))).click();
+            Thread.sleep(1000);
+
+            //click on Update button
+            WebElement updateBtn1 = driver.findElement(By.xpath("//button[text()='Update']"));
+            ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({block:'center', inline:'center'});", updateBtn1);
+            Thread.sleep(500);
+            ((JavascriptExecutor) driver).executeScript("arguments[0].click();", updateBtn1);
+            Thread.sleep(2000);
+
+            //Wait for toast message
+            WebElement toast2 = wait.until(ExpectedConditions.visibilityOfElementLocated(
+                    By.xpath("//*[contains(text(),'Update Successful!')]")
+            ));
+            Thread.sleep(1000);
+            assert toast2 != null;
+            if (toast2.isDisplayed()) {
+                System.out.println("✅ Costing updated successfully!");
+            } else {
+                System.out.println("❌ Error occured.");
+            }
+            Thread.sleep(2000);
+            wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//img[@class='more']"))).click();
+            Thread.sleep(2000);
+
+            wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[text()='Publish']"))).click();
+            Thread.sleep(2000);
+
+            // get the toast message
+            WebElement pop2 = wait.until(ExpectedConditions.visibilityOfElementLocated(
+                    By.xpath("//p[@class='toast-text']")
+            ));
+            assert pop2 != null;
+            System.out.println("After publish: "+pop2.getText());
+            Thread.sleep(2000);
 
         } catch (Exception e) {
             System.out.println("❌ Exception occurred: " + e.getMessage());
