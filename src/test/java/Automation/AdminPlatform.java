@@ -19,7 +19,7 @@ public class AdminPlatform {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
 
         try {
-            driver.get("https://testadmin-copy2.nitex.com/login");
+            driver.get("https://*****/login");   //our test admin platform -can't share
             driver.manage().window().maximize();
 
             System.out.println("The page Title is : " + driver.getTitle());
@@ -35,9 +35,9 @@ public class AdminPlatform {
 
             //Login
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("standard-adornment-email")))
-                    .sendKeys("shadman_test1@nitex.info");
+                    .sendKeys("***");  //can't share
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("standard-adornment-password")))
-                    .sendKeys("Tan12!@");
+                    .sendKeys("***");  //can't share
             wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'Log in')]"))).click();
 
             // Validation point for successful login
@@ -573,9 +573,9 @@ public class AdminPlatform {
             }
             //Login with 'Costing Manager' account
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("standard-adornment-email")))
-                    .sendKeys("shofiq1@nitex.info");
+                    .sendKeys("****");  //can't share
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("standard-adornment-password")))
-                    .sendKeys("Tan12!@");
+                    .sendKeys("***"); //can't share
             wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'Log in')]"))).click();
 
             // Validation point for successful login
