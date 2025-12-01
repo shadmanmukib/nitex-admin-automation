@@ -59,7 +59,7 @@ public class AdminPlatform {
 
             //Upload collection cover image
             WebElement imageUpload = wait.until(ExpectedConditions.presenceOfElementLocated(By.id("drag-upload")));
-            imageUpload.sendKeys("C:/Users/Nitex/Downloads/668fd7f5e96f7-square.jpg");
+            imageUpload.sendKeys("***.jpg");  //can't share
 
             //Create unique collection name
             String collectionName = "Shadman_" + UUID.randomUUID().toString().substring(0, 4);
@@ -128,7 +128,7 @@ public class AdminPlatform {
 
             //Upload a style image
             WebElement uploadInput = wait.until(ExpectedConditions.presenceOfElementLocated(By.id("style-upload")));
-            uploadInput.sendKeys("C:/Users/Nitex/Downloads/Screenshot (28).png");
+            uploadInput.sendKeys("****.png");  //can't share
             Thread.sleep(2000);
 
             //Validate image upload success
@@ -452,10 +452,10 @@ public class AdminPlatform {
             Thread.sleep(2000);
 
             // Provide full paths separated by "\n"
-            String image1 = "C:/Users/Nitex/Downloads/1762252322753_WT25-A4683_--F.png";
-            String image2 = "C:/Users/Nitex/Downloads/1762252322754_WT25-A4683_-B.png";
-            String image3 = "C:/Users/Nitex/Downloads/1762252322753_WT25-A4683__FT.jpg";
-            String image4 = "C:/Users/Nitex/Downloads/1762252322752_WT25-A4683__D.jpg";
+            String image1 = "******.png"; //can't share
+            String image2 = "******.png"; //can't share
+            String image3 = "******.jpg"; //can't share
+            String image4 = "******.jpg"; //can't share
 
             uploadPresentation.sendKeys(image1 + "\n" + image2 + "\n" + image3 + "\n" + image4);
             Thread.sleep(15000);
