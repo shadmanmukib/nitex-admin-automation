@@ -6,7 +6,7 @@ This repository contains an end-to-end Selenium automation script for the **Nite
 
 ## 🚀 Overview
 
-This automation script performs a complete functional validation of the **Nitex Admin Panel** (test environment: `https://testadmin-copy2.nitex.com/login`) by simulating real user actions.
+This automation script performs a complete functional validation of the **Nitex Admin Panel** (test environment: `https://**********/login`) by simulating real user actions.
 
 It includes:
 
